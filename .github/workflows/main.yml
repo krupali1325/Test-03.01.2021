@@ -1,40 +1,37 @@
-# This workflow integrates ShiftLeft NG SAST with GitHub
-# Visit https://docs.shiftleft.io for help
-name: ShiftLeft
 
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
 on:
-  pull_request:
-  workflow_dispatch:
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-  # We recommend triggering a scan when merging to your default branch as a best practice,
-  # especially if you'd like to compare the results of two scans (e.g., a feature branch against the
-  # default branch)
-  branches:
-    - main
-    - master
-jobs:
-  NG SAST-Build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    # We are building this application with Java 11
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.3.0
-      with:
-        java-version: 11.0.x
-    - name: Package with maven
-      run: mvn compile package
-    - name: Download ShiftLeft CLI
-      run: |
-        curl https://cdn.shiftleft.io/download/sl > ${GITHUB_WORKSPACE}/sl && chmod a+rx ${GITHUB_WORKSPACE}/sl
-    # ShiftLeft requires Java 1.8. Post the package step override the version
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.3.0
-      with:
-        java-version: 1.8
-    - name: NextGen Static Analysis
-      run: ${GITHUB_WORKSPACE}/sl analyze --wait --app {{ .Application }} --tag branch={{`${{ github.head_ref }}`}} --vcs-prefix-correction "io/shiftleft=src/main/java/" --java --cpg target/hello-shiftleft-0.0.1.jar
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
-      env:
-        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
